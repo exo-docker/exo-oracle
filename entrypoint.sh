@@ -52,8 +52,8 @@ EOF
 }
 
 function createUser() {
-  echo "create user ${DATABASE_USER} identified by ${DATABASE_PASSWORD}; exit;" | ${ORACLE_HOME}/bin/sqlplus / as sysdba
-  echo "GRANT ALL PRIVILEGES on ${DATABASE_USER} to ${DATABASE}; exit;" | ${ORACLE_HOME}/bin/sqlplus / as sysdba
+  echo "create user ${ORACLE_USER} identified by ${ORACLE_PASSWORD};" | ${ORACLE_HOME}/bin/sqlplus / as sysdba
+  echo "GRANT ALL PRIVILEGES to ${ORACLE_USER};" | ${ORACLE_HOME}/bin/sqlplus / as sysdba
 }
 
 checkEnv
