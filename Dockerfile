@@ -1,4 +1,5 @@
 FROM oraclelinux:7.2
+MAINTAINER eXo Platform <docker@exoplatform.com>
 
 COPY installer/linuxamd64_12102_database_1of2.zip /installer/linuxamd64_12102_database_2of2.zip /installer/
 
