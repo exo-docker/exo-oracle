@@ -59,10 +59,11 @@ function createUser() {
 checkEnv
 
 checkOrCreateDatabase
-startDatabase
-createUser
 
 echo "[INFO] Starting oracle listener"
 $ORACLE_HOME/bin/netca /silent /responseFile $ORACLE_HOME/network/install/netca_typ.rsp
+
+startDatabase
+createUser
 
 tail -F /dev/null
