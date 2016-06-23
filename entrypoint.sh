@@ -35,13 +35,16 @@ function checkEnv() {
   set -e
 }
 
-function checkOrCreateDatabase() {
-  if [ -e ${ORACLE_HOME}/oradata/${ORACLE_SID} ]; then
-    echo "[INFO] Database already initialized, creation aborted"
+function startOrCreateDatabase() {
+  if [ -e ${ORACLE_BASE}/oradata/${ORACLE_SID} ]; then
+    echo "[INFO] Database already initialized, just starting it"
+
+    startDatabase
     return
   fi
 
   $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename General_Purpose.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}"
+  createUser
 }
 
 function startDatabase() {
@@ -56,14 +59,15 @@ function createUser() {
   echo "GRANT ALL PRIVILEGES to ${ORACLE_USER};" | ${ORACLE_HOME}/bin/sqlplus / as sysdba
 }
 
+function startListener() {
+  printf "LISTENER=(DESCRIPTION_LIST=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=0.0.0.0)(PORT=1521))(ADDRESS=(PROTOCOL=IPC)(KEY=EXTPROC1521))))\n" > $ORACLE_HOME/network/admin/listener.ora
+  $ORACLE_HOME/bin/lsnrctl start
+}
+
 checkEnv
 
-echo "[INFO] Starting oracle listener"
-$ORACLE_HOME/bin/netca /silent /responseFile $ORACLE_HOME/network/install/netca_typ.rsp
+startListener
 
-checkOrCreateDatabase
-
-# startDatabase
-createUser
+startOrCreateDatabase
 
 tail -F /dev/null
