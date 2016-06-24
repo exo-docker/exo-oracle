@@ -1,42 +1,55 @@
 #!/bin/bash -eu
 
 function checkEnv() {
-  set +u
+  set +eu
   local error=false
+
+  INITIALIZED=false
+
+  INIT_FILE=$(ls ${ORACLE_BASE}/data/init*.ora 2>/dev/null)
+
+  if [ -z "$INIT_FILE" ]; then
+    INITIALIZED=false
+  else
+    INITIALIZED=true
+    ORACLE_SID=$(basename ${INIT_FILE} | cut -f 1 -d"." | cut -b5-)
+  fi
 
   if [ -z ${ORACLE_SID} ]; then
     echo "[ERROR] You need to specify the desired ORACLE_SID"
     error=true
   fi
 
-  if [ -z ${ORACLE_DATABASE} ]; then
-    echo "[ERROR] You need to specify the desired ORACLE_DATABASE (8 chars max)"
-    error=true
-  fi
+  if ! $INITIALIZED; then
+    if [ -z ${ORACLE_DATABASE} ]; then
+      echo "[ERROR] You need to specify the desired ORACLE_DATABASE (8 chars max)"
+      error=true
+    fi
 
-  if [ -z ${ORACLE_USER} ]; then
-    echo "[ERROR] You need to specify the desired ORACLE_USER"
-    error=true
-  fi
+    if [ -z ${ORACLE_USER} ]; then
+      echo "[ERROR] You need to specify the desired ORACLE_USER"
+      error=true
+    fi
 
-  if [ -z ${ORACLE_PASSWORD} ]; then
-    echo "[ERROR] Uou need to specify the desired ORACLE_PASSWORD"
-    error=true
-  fi
+    if [ -z ${ORACLE_PASSWORD} ]; then
+      echo "[ERROR] Uou need to specify the desired ORACLE_PASSWORD"
+      error=true
+    fi
 
-  if [ -z ${ORACLE_DBA_PASSWORD} ]; then
-    echo "[ERROR] You need to specify the desired ORACLE_DBA_PASSWORD"
-    error=true
+    if [ -z ${ORACLE_DBA_PASSWORD} ]; then
+      echo "[ERROR] You need to specify the desired ORACLE_DBA_PASSWORD"
+      error=true
+    fi
   fi
 
   if ${error}; then
     exit 1
   fi
-  set -u
+  set -eu
 }
 
 function startOrCreateDatabase() {
-  if [ -e ${ORACLE_BASE}/dbs/init${ORACLE_SID}.ora ]; then
+  if $INITIALIZED; then
     echo "[INFO] Database already initialized, just starting it"
     cp -v ${ORACLE_BASE}/data/init${ORACLE_SID}.ora ${ORACLE_HOME}/dbs 
     cp -v ${ORACLE_BASE}/data/tnsnames.ora ${ORACLE_HOME}/network/admin
