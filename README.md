@@ -15,6 +15,11 @@ The Oracle instance can be launched with this command :
 docker run --name my-database -p 1521:1521 -e ORACLE_SID=sid -e ORACLE_DATABSE=mydb -e ORACLE_USER=user -e ORACLE_PASSWORD=password -e ORACLE_DBA_PASSWORD=syspassword oracle:12rc1
 ```
 
+The data are persisted on the directory `/u01/app/oracle/data`. To keep them between 2 container restarts, add this parameter to the command line:
+```
+-v local_datadir:/u01/app/oracle/data
+```
+
 ## Variables
 All these variables are mandatory :
 - ORACLE_SID : The oracle sid used to identified the database

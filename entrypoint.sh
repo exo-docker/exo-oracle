@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 function checkEnv() {
-  set +e
+  set +u
   local error=false
 
   if [ -z ${ORACLE_SID} ]; then
@@ -32,19 +32,24 @@ function checkEnv() {
   if ${error}; then
     exit 1
   fi
-  set -e
+  set -u
 }
 
 function startOrCreateDatabase() {
-  if [ -e ${ORACLE_BASE}/oradata/${ORACLE_SID} ]; then
+  if [ -e ${ORACLE_BASE}/dbs/init${ORACLE_SID}.ora ]; then
     echo "[INFO] Database already initialized, just starting it"
+    cp -v ${ORACLE_BASE}/data/init${ORACLE_SID}.ora ${ORACLE_HOME}/dbs 
+    cp -v ${ORACLE_BASE}/data/tnsnames.ora ${ORACLE_HOME}/network/admin
 
     startDatabase
     return
   fi
 
-  $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename General_Purpose.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}"
+  $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename ${ORACLE_HOME}/database.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}"
   createUser
+
+  cp ${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora ${ORACLE_BASE}/data
+  cp ${ORACLE_HOME}/network/admin/tnsnames.ora ${ORACLE_BASE}/data
 }
 
 function startDatabase() {
@@ -52,6 +57,7 @@ function startDatabase() {
   startup;
   exit;
 EOF
+
 }
 
 function createUser() {
