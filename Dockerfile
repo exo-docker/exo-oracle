@@ -38,6 +38,4 @@ USER oracle
 WORKDIR ${ORACLE_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 
-VOLUME [${ORACLE_BASE}/data]
-
 EXPOSE 1521
