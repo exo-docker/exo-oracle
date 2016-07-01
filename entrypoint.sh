@@ -58,7 +58,7 @@ function startOrCreateDatabase() {
     return
   fi
 
-  $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename ${ORACLE_HOME}/database.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}" -initParams PROCESSES=70
+  $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename ${ORACLE_HOME}/database.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}" -initParams PROCESSES=150
   createUser
 
   cp ${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora ${ORACLE_BASE}/data
