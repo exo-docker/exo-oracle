@@ -45,6 +45,10 @@ function checkEnv() {
   if ${error}; then
     exit 1
   fi
+  
+  echo "[INFO] Using sga_limit=${ORACLE_SGA_TARGET}"
+  echo "[INFO] Using pga_limit=${ORACLE_PGA_TARGET}"
+
   set -eu
 }
 
@@ -61,8 +65,21 @@ function startOrCreateDatabase() {
   $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename ${ORACLE_HOME}/database.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}" -initParams PROCESSES=150
   createUser
 
+  updateVariables
+
+  # we need to restart after the properties update
+  stopDatabase
+  startDatabase
+
   cp ${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora ${ORACLE_BASE}/data
   cp ${ORACLE_HOME}/network/admin/tnsnames.ora ${ORACLE_BASE}/data
+}
+
+function stopDatabase() {
+  ${ORACLE_HOME}/bin/sqlplus / as sysdba << EOF
+  shutdown immediate;
+  exit;
+EOF
 }
 
 function startDatabase() {
@@ -70,7 +87,15 @@ function startDatabase() {
   startup;
   exit;
 EOF
+}
 
+function updateVariables() {
+  ${ORACLE_HOME}/bin/sqlplus / as sysdba << EOF
+alter system set sga_target=${ORACLE_SGA_TARGET} scope=spfile;
+alter system set pga_aggregate_target=${ORACLE_PGA_TARGET} scope=spfile;
+alter system set FILESYSTEMIO_OPTIONS=asynch scope=spfile;
+  exit;
+EOF
 }
 
 function createUser() {

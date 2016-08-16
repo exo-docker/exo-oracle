@@ -27,3 +27,5 @@ All these variables are mandatory :
 - ORACLE_USER : The standard user name allowed to connect to the database
 - ORACLE_PASSWORD : The password of the user 
 - ORACLE_DBA_PASSWORD : Administrator password
+- ORACLE_PGA_TARGET : the memory used by the Program Global Area (default: 512m)
+- ORACLE_SGA_TARGET : the memory used by the System Global Area (default: 512m)
