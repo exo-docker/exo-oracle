@@ -14,7 +14,7 @@ A build of the image is available on the [docker hub](https://hub.docker.com/r/e
 
 The Oracle instance can be launched with this command :
 ```
-docker run --name my-database -p 1521:1521 -e ORACLE_SID=sid -e ORACLE_DATABSE=mydb -e ORACLE_USER=myuser -e ORACLE_PASSWORD=mypassword -e ORACLE_DBA_PASSWORD=syspassword exoplatform/oracle:12cR1
+docker run --name my-database -p 1521:1521 -e ORACLE_SID=sid -e ORACLE_DATABASE=mydb -e ORACLE_USER=myuser -e ORACLE_PASSWORD=mypassword -e ORACLE_DBA_PASSWORD=syspassword exoplatform/oracle:12cR1
 ```
 
 This will launch Oracle and initialize the database.
