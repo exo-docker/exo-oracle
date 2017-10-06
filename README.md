@@ -4,9 +4,12 @@ This is a Oracle image to easily build an Oracle environment for test purposes.
 
 ## How to build
 
-- Download the official Oracle 12cR1 installer on the [oracle site](http://www.oracle.com/technetwork/indexes/downloads/index.html#database)
-- Put the 2 archives `linuxamd64_12102_database_1of2.zip` and `linuxamd64_12102_database_2of2.zip` in the `installer` directory
+
+- Download the official Oracle 12cR2 installer on the [oracle site](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index-092322.html)
+- Put the archive `linuxx64_12201_database.zip`in the `installer` directory
 - Execute `docker build -t <image name>:<tag> .`. It will create the image and install Oracle on it. it can take some time.
+
+:info: when new version are release, compare the file db_install.rsp with ``/u01/app/oracle/product/12.2.0.1/dbhome_1/assistants/dbca/dbca.rsp`` in the image
 
 ## How to run
 
@@ -14,7 +17,7 @@ A build of the image is available on the [docker hub](https://hub.docker.com/r/e
 
 The Oracle instance can be launched with this command :
 ```
-docker run --name my-database -p 1521:1521 -e ORACLE_SID=sid -e ORACLE_DATABASE=mydb -e ORACLE_USER=myuser -e ORACLE_PASSWORD=mypassword -e ORACLE_DBA_PASSWORD=syspassword exoplatform/oracle:12cR1
+docker run --name my-database -p 1521:1521 -e ORACLE_SID=sid -e ORACLE_DATABASE=mydb -e ORACLE_USER=myuser -e ORACLE_PASSWORD=mypassword -e ORACLE_DBA_PASSWORD=syspassword exoplatform/oracle:12cR2
 ```
 
 This will launch Oracle and initialize the database.
@@ -37,7 +40,7 @@ The data are persisted on the directory `/u01/app/oracle/data`. To keep them bet
 As the database initialization can take a long time, for quick tests and if you don't need to keep the data between two restarts, an image with a pre-initialized database is available
 
 ```
-docker run --rm --name my-database -p 1521:1521  exoplatform/oracle:12cR1_plf
+docker run --rm --name my-database -p 1521:1521  exoplatform/oracle:12cR2_plf
 ```
 
 The parameters are :
@@ -45,3 +48,4 @@ The parameters are :
   - ORACLE_PASSWORD : plf
   - ORACLE_DATABASE : plf
   - ORACLE_SID : plf
+

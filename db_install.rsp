@@ -1,5 +1,5 @@
 ####################################################################
-## Copyright(c) Oracle Corporation 1998,2014. All rights reserved.##
+## Copyright(c) Oracle Corporation 1998,2017. All rights reserved.##
 ##                                                                ##
 ## Specify values for the variables listed below to customize     ##
 ## your installation.                                             ##
@@ -18,7 +18,7 @@
 #-------------------------------------------------------------------------------
 # Do not change the following system generated value. 
 #-------------------------------------------------------------------------------
-oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v12.1.0
+oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v12.2.0
 
 #-------------------------------------------------------------------------------
 # Specify the installation option.
@@ -97,10 +97,12 @@ ORACLE_HOME=
 ORACLE_BASE=
 
 #-------------------------------------------------------------------------------
-# Specify the installation edition of the component.                     
-#                                                             
-# The value should contain only one of these choices.  
-#   - EE     : Enterprise Edition 
+# Specify the installation edition of the component.
+#
+# The value should contain only one of these choices.
+#   - EE     : Enterprise Edition
+#   - SE2     : Standard Edition 2
+
 
 #-------------------------------------------------------------------------------
 oracle.install.db.InstallEdition=EE
@@ -121,28 +123,33 @@ oracle.install.db.InstallEdition=EE
 #------------------------------------------------------------------------------
 # The DBA_GROUP is the OS group which is to be granted OSDBA privileges.
 #-------------------------------------------------------------------------------
-oracle.install.db.DBA_GROUP=dba
+oracle.install.db.OSDBA_GROUP=dba
 
 #------------------------------------------------------------------------------
-# The OPER_GROUP is the OS group which is to be granted OSOPER privileges.
+# The OSOPER_GROUP is the OS group which is to be granted SYSOPER privileges.
 # The value to be specified for OSOPER group is optional.
 #------------------------------------------------------------------------------
-oracle.install.db.OPER_GROUP=
+oracle.install.db.OSOPER_GROUP=
 
 #------------------------------------------------------------------------------
-# The BACKUPDBA_GROUP is the OS group which is to be granted OSBACKUPDBA privileges.
+# The OSBACKUPDBA_GROUP is the OS group which is to be granted SYSBACKUP privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.BACKUPDBA_GROUP=dba
+oracle.install.db.OSBACKUPDBA_GROUP=dba
 
 #------------------------------------------------------------------------------
-# The DGDBA_GROUP is the OS group which is to be granted OSDGDBA privileges.
+# The OSDGDBA_GROUP is the OS group which is to be granted SYSDG privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.DGDBA_GROUP=dba
+oracle.install.db.OSDGDBA_GROUP=dba
 
 #------------------------------------------------------------------------------
-# The KMDBA_GROUP is the OS group which is to be granted OSKMDBA privileges.
+# The OSKMDBA_GROUP is the OS group which is to be granted SYSKM privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.KMDBA_GROUP=dba
+oracle.install.db.OSKMDBA_GROUP=dba
+
+#------------------------------------------------------------------------------
+# The OSRACDBA_GROUP is the OS group which is to be granted SYSRAC privileges.
+#------------------------------------------------------------------------------
+oracle.install.db.OSRACDBA_GROUP=dba
 
 ###############################################################################
 #                                                                             #
@@ -309,6 +316,7 @@ oracle.install.db.config.starterdb.password.SYSTEM=
 
 #-------------------------------------------------------------------------------
 # Specify the DBSNMP password for the starter database.
+# Applicable only when oracle.install.db.config.starterdb.managementOption=CLOUD_CONTROL
 #-------------------------------------------------------------------------------
 oracle.install.db.config.starterdb.password.DBSNMP=
 

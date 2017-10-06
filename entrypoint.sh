@@ -1,12 +1,18 @@
 #!/bin/bash -eu
 
+set +u
+[ "${DEBUG}" ] && set -x
+set -u
+
+ORA_DATA=${ORACLE_BASE}/oradata
+
 function checkEnv() {
   set +eu
   local error=false
 
   INITIALIZED=false
 
-  INIT_FILE=$(ls ${ORACLE_BASE}/data/init*.ora 2>/dev/null)
+  INIT_FILE=$(ls ${ORA_DATA}/init*.ora 2>/dev/null)
 
   if [ -z "$INIT_FILE" ]; then
     INITIALIZED=false
@@ -55,14 +61,20 @@ function checkEnv() {
 function startOrCreateDatabase() {
   if $INITIALIZED; then
     echo "[INFO] Database already initialized, just starting it"
-    cp -v ${ORACLE_BASE}/data/init${ORACLE_SID}.ora ${ORACLE_HOME}/dbs 
-    cp -v ${ORACLE_BASE}/data/tnsnames.ora ${ORACLE_HOME}/network/admin
+    cp -v ${ORA_DATA}/init${ORACLE_SID}.ora ${ORACLE_HOME}/dbs 
+    cp -v ${ORA_DATA}/tnsnames.ora ${ORACLE_HOME}/network/admin
 
     startDatabase
     return
   fi
 
-  $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename ${ORACLE_HOME}/database.dbc -gdbname "${ORACLE_SID}" -sid "${ORACLE_SID}" -syspassword "${ORACLE_DBA_PASSWORD}" -systempassword "${ORACLE_DBA_PASSWORD}" -dbsnmppassword "${ORACLE_DBA_PASSWORD}" -initParams PROCESSES=150
+  $ORACLE_HOME/bin/dbca -silent -createdatabase -templatename ${ORACLE_HOME}/assistants/dbca/templates/${ORACLE_DATABASE_TEMPLATE} \
+            -gdbname "${ORACLE_SID}" \
+            -sid "${ORACLE_SID}" \
+            -syspassword "${ORACLE_DBA_PASSWORD}" \
+            -systempassword "${ORACLE_DBA_PASSWORD}" \
+            -dbsnmppassword "${ORACLE_DBA_PASSWORD}" \
+            -initParams PROCESSES=150,SGA_TARGET=${ORACLE_SGA_TARGET},SGA_MAX_SIZE=${ORACLE_SGA_TARGET}
   createUser
 
   updateVariables
@@ -71,8 +83,8 @@ function startOrCreateDatabase() {
   stopDatabase
   startDatabase
 
-  cp ${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora ${ORACLE_BASE}/data
-  cp ${ORACLE_HOME}/network/admin/tnsnames.ora ${ORACLE_BASE}/data
+  cp ${ORACLE_HOME}/dbs/init.ora ${ORA_DATA}/init${ORACLE_SID}.ora
+  cp ${ORACLE_HOME}/network/admin/tnsnames.ora ${ORA_DATA}
 }
 
 function stopDatabase() {
@@ -92,6 +104,7 @@ EOF
 function updateVariables() {
   ${ORACLE_HOME}/bin/sqlplus / as sysdba << EOF
 alter system set sga_target=${ORACLE_SGA_TARGET} scope=spfile;
+alter system set sga_max_size=${ORACLE_SGA_TARGET} scope=spfile;
 alter system set pga_aggregate_target=${ORACLE_PGA_TARGET} scope=spfile;
 alter system set FILESYSTEMIO_OPTIONS=asynch scope=spfile;
   exit;

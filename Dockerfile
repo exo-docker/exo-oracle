@@ -1,24 +1,24 @@
 FROM oraclelinux:7.2
 MAINTAINER eXo Platform <docker@exoplatform.com>
 
-COPY installer/linuxamd64_12102_database_1of2.zip /installer/linuxamd64_12102_database_2of2.zip /installer/
+COPY installer/linuxx64_12201_database.zip /installer/
 COPY db_install.rsp /u01/app/oracle/
 
 ENV ORACLE_BASE=/u01/app/oracle
-ENV ORACLE_HOME=/u01/app/oracle/product/12.1.0.2/dbhome_1
+ENV ORACLE_HOME=/u01/app/oracle/product/12.2.0.1/dbhome_1
 
-RUN yum -y install oracle-rdbms-server-12cR1-preinstall perl unzip && \
-         mkdir -p /u01/app/oracle && chown oracle:oinstall /u01/app/oracle && \
+RUN yum -y install oracle-database-server-12cR2-preinstall perl unzip && \
+         mkdir -p /u01/app/oracle && chown oracle:oinstall /u01/app/oracle && \ 
          chown -R oracle:oinstall ${ORACLE_BASE}/db_install.rsp /installer 
  
 
 COPY oraInst.loc /etc/
 
-WORKDIR /installer
+WORKDIR /installer 
 
 USER oracle
 
-RUN unzip linuxamd64_12102_database_1of2.zip && unzip linuxamd64_12102_database_2of2.zip && \ 
+RUN unzip linuxx64_12201_database.zip && \
     /installer/database/runInstaller -ignoresysprereqs -ignoreprereq -waitforcompletion -force -silent ORACLE_HOME=${ORACLE_HOME} ORACLE_HOME_NAME=orcl -responseFile ${ORACLE_BASE}/db_install.rsp  DECLINE_SECURITY_UPDATES=true ORACLE_BASE=${ORACLE_BASE} && \
     rm -rf /installer/* && \
     echo "# fix $ORACLE_HOME/bin/oracle command empty file" && \
@@ -28,7 +28,6 @@ USER root
 
 RUN $ORACLE_HOME/root.sh
 
-COPY database.dbc ${ORACLE_HOME}
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chown oracle:dba /entrypoint.sh && chmod u+x /entrypoint.sh
@@ -40,5 +39,6 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 1521
 
-ENV ORACLE_SGA_TARGET=512m
+ENV ORACLE_DATABASE_TEMPLATE=General_Purpose.dbc
 ENV ORACLE_PGA_TARGET=512m
+ENV ORACLE_SGA_TARGET=512m
