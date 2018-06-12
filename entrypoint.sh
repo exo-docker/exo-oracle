@@ -38,7 +38,7 @@ function checkEnv() {
     fi
 
     if [ -z ${ORACLE_PASSWORD} ]; then
-      echo "[ERROR] Uou need to specify the desired ORACLE_PASSWORD"
+      echo "[ERROR] You need to specify the desired ORACLE_PASSWORD"
       error=true
     fi
 
